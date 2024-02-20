@@ -16,8 +16,6 @@
 
 package com.google.android.material.timepicker;
 
-import com.google.android.material.R;
-
 import static com.google.android.material.timepicker.TimeFormat.CLOCK_12H;
 import static com.google.android.material.timepicker.TimeFormat.CLOCK_24H;
 import static java.util.Calendar.AM;
@@ -27,11 +25,15 @@ import static java.util.Calendar.PM;
 import android.content.res.Resources;
 import android.os.Parcel;
 import android.os.Parcelable;
+
 import androidx.annotation.IntRange;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
+
+import com.google.android.material.R;
 import com.google.android.material.timepicker.TimePickerControls.ActiveSelection;
 import com.google.android.material.timepicker.TimePickerControls.ClockPeriod;
+
 import java.util.Arrays;
 
 /** The representation of the TimeModel used by TimePicker views. */
@@ -46,7 +48,8 @@ class TimeModel implements Parcelable {
   @TimeFormat final int format;
 
   int hour;
-  int minute;
+  int minute; // TODO SecTime fine usages and check that it matches with secons
+  int second;
 
   @ActiveSelection int selection;
   @ClockPeriod int period;
@@ -56,12 +59,13 @@ class TimeModel implements Parcelable {
   }
 
   public TimeModel(@TimeFormat int format) {
-    this(0, 0, HOUR, format);
+    this(0, 0, 0,HOUR, format);
   }
 
-  public TimeModel(int hour, int minute, @ActiveSelection int selection, @TimeFormat int format) {
+  public TimeModel(int hour, int minute, int second, @ActiveSelection int selection, @TimeFormat int format) {
     this.hour = hour;
     this.minute = minute;
+    this.second = second;
     this.selection = selection;
     this.format = format;
     period = getPeriod(hour);
@@ -70,7 +74,7 @@ class TimeModel implements Parcelable {
   }
 
   protected TimeModel(Parcel in) {
-    this(in.readInt(), in.readInt(), in.readInt(), in.readInt());
+    this(in.readInt(), in.readInt(), in.readInt(), in.readInt(), in.readInt());
   }
 
   /** Set hour respecting the current clock period */
@@ -96,6 +100,10 @@ class TimeModel implements Parcelable {
 
   public void setMinute(@IntRange(from = 0, to = 59) int minute) {
     this.minute = minute % 60;
+  }
+
+  public void setSecond(@IntRange(from = 0, to = 59) int second) {
+    this.second = second % 60;
   }
 
   public int getHourForDisplay() {
@@ -129,7 +137,7 @@ class TimeModel implements Parcelable {
 
   @Override
   public int hashCode() {
-    Object[] hashedFields = {format, hour, minute, selection};
+    Object[] hashedFields = {format, hour, minute, second, selection};
     return Arrays.hashCode(hashedFields);
   }
 
@@ -146,6 +154,7 @@ class TimeModel implements Parcelable {
     TimeModel that = (TimeModel) o;
     return hour == that.hour
         && minute == that.minute
+        && second == that.second
         && format == that.format
         && selection == that.selection;
   }
@@ -159,6 +168,7 @@ class TimeModel implements Parcelable {
   public void writeToParcel(Parcel dest, int flags) {
     dest.writeInt(hour);
     dest.writeInt(minute);
+    dest.writeInt(second);
     dest.writeInt(selection);
     dest.writeInt(format);
   }
