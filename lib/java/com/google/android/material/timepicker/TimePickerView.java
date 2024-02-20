@@ -16,12 +16,11 @@
 
 package com.google.android.material.timepicker;
 
-import com.google.android.material.R;
-
 import static java.util.Calendar.AM;
 import static java.util.Calendar.HOUR;
 import static java.util.Calendar.MINUTE;
 import static java.util.Calendar.PM;
+import static java.util.Calendar.SECOND;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -34,17 +33,21 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.Checkable;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.view.AccessibilityDelegateCompat;
 import androidx.core.view.ViewCompat;
+
+import com.google.android.material.R;
 import com.google.android.material.button.MaterialButtonToggleGroup;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.timepicker.ClockHandView.OnActionUpListener;
 import com.google.android.material.timepicker.ClockHandView.OnRotateListener;
 import com.google.android.material.timepicker.RadialViewGroup.Level;
+
 import java.util.Locale;
 
 /**
@@ -73,6 +76,7 @@ class TimePickerView extends ConstraintLayout implements TimePickerControls {
 
   static final String GENERIC_VIEW_ACCESSIBILITY_CLASS_NAME = "android.view.View";
 
+  private final Chip secondView;
   private final Chip minuteView;
   private final Chip hourView;
 
@@ -119,6 +123,7 @@ class TimePickerView extends ConstraintLayout implements TimePickerControls {
       }
     });
 
+    secondView = findViewById(R.id.material_second_tv);
     minuteView = findViewById(R.id.material_minute_tv);
     hourView = findViewById(R.id.material_hour_tv);
     clockHandView = findViewById(R.id.material_clock_hand);
@@ -157,6 +162,7 @@ class TimePickerView extends ConstraintLayout implements TimePickerControls {
           }
         };
 
+    secondView.setOnTouchListener(onTouchListener);
     minuteView.setOnTouchListener(onTouchListener);
     hourView.setOnTouchListener(onTouchListener);
   }
@@ -169,13 +175,21 @@ class TimePickerView extends ConstraintLayout implements TimePickerControls {
     ViewCompat.setAccessibilityDelegate(minuteView, clickActionDelegate);
   }
 
+  // the method name is odd, given its use, but it follows the pattern for other elements
+  public void setMinuteClickDelegate(AccessibilityDelegateCompat clickActionDelegate) {
+    ViewCompat.setAccessibilityDelegate(secondView, clickActionDelegate);
+  }
+
   private void setUpDisplay() {
+    secondView.setTag(R.id.selection_type, SECOND);
     minuteView.setTag(R.id.selection_type, MINUTE);
     hourView.setTag(R.id.selection_type, HOUR);
 
+    secondView.setOnClickListener(selectionListener);
     minuteView.setOnClickListener(selectionListener);
     hourView.setOnClickListener(selectionListener);
 
+    secondView.setAccessibilityClassName(GENERIC_VIEW_ACCESSIBILITY_CLASS_NAME);
     minuteView.setAccessibilityClassName(GENERIC_VIEW_ACCESSIBILITY_CLASS_NAME);
     hourView.setAccessibilityClassName(GENERIC_VIEW_ACCESSIBILITY_CLASS_NAME);
   }
@@ -199,15 +213,24 @@ class TimePickerView extends ConstraintLayout implements TimePickerControls {
   }
 
   @Override
-  @SuppressLint("DefaultLocale")
   public void updateTime(@ClockPeriod int period, int hourOfDay, int minute) {
+    updateTime(period, hourOfDay, minute, 0);
+  }
+
+  @Override
+  @SuppressLint("DefaultLocale")
+  public void updateTime(@ClockPeriod int period, int hourOfDay, int minute, int second) {
     int checkedId = period == PM
         ? R.id.material_clock_period_pm_button
         : R.id.material_clock_period_am_button;
     toggle.check(checkedId);
     Locale current = getResources().getConfiguration().locale;
+    String secondFormatted = String.format(current, TimeModel.ZERO_LEADING_NUMBER_FORMAT, second);
     String minuteFormatted = String.format(current, TimeModel.ZERO_LEADING_NUMBER_FORMAT, minute);
     String hourFormatted = String.format(current, TimeModel.ZERO_LEADING_NUMBER_FORMAT, hourOfDay);
+    if (!TextUtils.equals(secondView.getText(), secondFormatted)) {
+      secondView.setText(secondFormatted);
+    }
     if (!TextUtils.equals(minuteView.getText(), minuteFormatted)) {
       minuteView.setText(minuteFormatted);
     }
@@ -218,6 +241,7 @@ class TimePickerView extends ConstraintLayout implements TimePickerControls {
 
   @Override
   public void setActiveSelection(@ActiveSelection int selection) {
+    updateSelection(secondView, selection == SECOND);
     updateSelection(minuteView, selection == MINUTE);
     updateSelection(hourView, selection == HOUR);
   }

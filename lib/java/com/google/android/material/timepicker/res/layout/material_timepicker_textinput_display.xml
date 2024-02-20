@@ -32,4 +32,10 @@
     android:id="@+id/material_minute_text_input"
     layout="@layout/material_chip_input_combo" />
 
+  <include layout="@layout/material_clock_display_divider" />
+
+  <include
+    android:id="@+id/material_second_text_input"
+    layout="@layout/material_chip_input_combo" />
+
 </LinearLayout>

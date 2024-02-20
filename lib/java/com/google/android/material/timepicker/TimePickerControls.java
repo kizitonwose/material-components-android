@@ -19,6 +19,7 @@ package com.google.android.material.timepicker;
 import androidx.annotation.IntDef;
 import androidx.annotation.IntRange;
 import androidx.annotation.StringRes;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Calendar;
@@ -40,7 +41,9 @@ interface TimePickerControls {
   @Retention(RetentionPolicy.SOURCE)
   @interface ActiveSelection {}
 
-  /** Sets the time in millis * */
+  void updateTime(@ClockPeriod int period, int hourOfDay, int minute, int second);
+
+    /** Sets the time in millis * */
   void updateTime(@ClockPeriod int period, int hourOfDay, @IntRange(from = 0) int minute);
 
   /** Set what we need to select. * */
