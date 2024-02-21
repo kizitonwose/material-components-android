@@ -69,7 +69,7 @@ class TimePickerClockPresenter
   private float hourRotation;
 
   private boolean broadcasting = false;
-  private boolean secondEnabled = true;
+  private boolean isSecondEnabled = true;
 
   public TimePickerClockPresenter(TimePickerView timePickerView, TimeModel time) {
     this.timePickerView = timePickerView;
@@ -251,8 +251,8 @@ class TimePickerClockPresenter
         minuteRotation = time.minute * DEGREES_PER_MINUTE;
       }
       // Don't animate rotation if we are about to switch to the second view.
-      timePickerView.setHandRotation(minuteRotation, /* animate= */ moveInEventStream && !secondEnabled);
-      if (!isExploreByTouchEnabled && secondEnabled) {
+      timePickerView.setHandRotation(minuteRotation, /* animate= */ moveInEventStream && !isSecondEnabled);
+      if (!isExploreByTouchEnabled && isSecondEnabled) {
         setSelection(SECOND, /* animate= */ true);
       }
     } else {

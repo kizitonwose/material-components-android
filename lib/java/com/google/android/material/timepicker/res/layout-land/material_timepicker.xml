@@ -44,7 +44,7 @@
     android:id="@+id/material_clock_period_toggle"
     android:layout_width="0dp"
     android:layout_height="wrap_content"
-    layout="@layout/material_clock_period_toggle_land" />
+    layout="@layout/material_clock_period_toggle" />
 
   <com.google.android.material.timepicker.ClockFaceView
     android:id="@+id/material_clock_face"
