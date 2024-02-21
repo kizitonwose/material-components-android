@@ -48,7 +48,7 @@ class TimePickerTextInputKeyController implements OnEditorActionListener, OnKeyL
   private final TimeModel time;
 
   private boolean keyListenerRunning = false;
-  private boolean isSecondEnabled = true; // TODO SecTime
+  private boolean isSecondEnabled = true;
 
   TimePickerTextInputKeyController(
       ChipTextInputComboView hourLayoutComboView,
