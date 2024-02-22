@@ -4,6 +4,7 @@ apply plugin: 'com.android.library'
 apply plugin: 'maven-publish'
 
 version = mdcLibraryVersion
+group = 'com.github.kizitonwose'
 
 dependencies {
   api compatibility("activity")
@@ -259,20 +260,17 @@ task androidSourcesJar(type: Jar) {
 
 afterEvaluate {
   publishing {
-    repositories {
-      maven {
-        url = "$mavenRepoUrl"
-      }
-    }
+//    repositories {
+//      maven {
+//        url = "$mavenRepoUrl"
+//      }
+//    }
 
     publications {
       release(MavenPublication) {
         from components.release
 
         artifact androidSourcesJar
-
-        groupId = 'com.google.android.material'
-        artifactId = 'material'
         version project.version
         pom {
           name = 'Material Components for Android'
@@ -280,7 +278,7 @@ afterEvaluate {
             'that you can add to your Android application in order to use ' +
             'APIs that provide implementations of the Material Design specification. ' +
             'Compatible on devices running API 14 or later.'
-          url = 'https://github.com/material-components/material-components-android'
+          url = 'https://github.com/kizitonwose/material-components-android'
           inceptionYear = '2015'
           licenses {
             license {
@@ -295,8 +293,8 @@ afterEvaluate {
             }
           }
           scm {
-            connection = 'scm:git:https://github.com/material-components/material-components-android.git'
-            url = 'https://github.com/material-components/material-components-android'
+            connection = 'scm:git:https://github.com/kizitonwose/material-components-android.git'
+            url = 'https://github.com/kizitonwose/material-components-android'
           }
         }
       }
