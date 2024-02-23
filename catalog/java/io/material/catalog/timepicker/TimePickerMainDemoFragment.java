@@ -17,10 +17,10 @@ package io.material.catalog.timepicker;
 
 import io.material.catalog.R;
 
-import static com.google.android.material.timepicker.MaterialTimePicker.INPUT_MODE_CLOCK;
-import static com.google.android.material.timepicker.MaterialTimePicker.INPUT_MODE_KEYBOARD;
-import static com.google.android.material.timepicker.TimeFormat.CLOCK_12H;
-import static com.google.android.material.timepicker.TimeFormat.CLOCK_24H;
+import static com.google.android.material.timepickerk.MaterialTimePicker.INPUT_MODE_CLOCK;
+import static com.google.android.material.timepickerk.MaterialTimePicker.INPUT_MODE_KEYBOARD;
+import static com.google.android.material.timepickerk.TimeFormat.CLOCK_12H;
+import static com.google.android.material.timepickerk.TimeFormat.CLOCK_24H;
 
 import android.os.Bundle;
 import androidx.appcompat.widget.SwitchCompat;
@@ -33,8 +33,8 @@ import android.widget.Button;
 import android.widget.TextView;
 import androidx.annotation.Nullable;
 import com.google.android.material.button.MaterialButtonToggleGroup;
-import com.google.android.material.timepicker.MaterialTimePicker;
-import com.google.android.material.timepicker.TimeFormat;
+import com.google.android.material.timepickerk.MaterialTimePicker;
+import com.google.android.material.timepickerk.TimeFormat;
 import io.material.catalog.feature.DemoFragment;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
