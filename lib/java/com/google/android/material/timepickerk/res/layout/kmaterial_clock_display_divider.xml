@@ -21,6 +21,7 @@
   android:layout_width="@dimen/kmaterial_clock_display_padding"
   android:layout_height="@dimen/kmaterial_clock_display_height"
   android:gravity="center"
+  android:textSize="@dimen/kmaterial_time_text_size_small"
   android:importantForAccessibility="no"
   tools:ignore="UnusedAttribute"
   tools:showIn="@layout/kmaterial_timepicker_textinput_display" />
