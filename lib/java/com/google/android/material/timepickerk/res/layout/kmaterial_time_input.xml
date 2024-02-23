@@ -25,6 +25,7 @@
   <com.google.android.material.textfield.TextInputEditText
     android:layout_width="@dimen/kmaterial_clock_display_width"
     android:layout_height="@dimen/kmaterial_clock_display_height"
+    android:textSize="@dimen/kmaterial_time_text_size_small"
     android:textCursorDrawable="@drawable/material_cursor_drawable" />
 
   <TextView
