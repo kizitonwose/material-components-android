@@ -15,19 +15,12 @@
      limitations under the License.
 -->
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-  android:layout_width="wrap_content"
-  android:layout_height="wrap_content"
-  android:baselineAligned="false"
-  android:orientation="horizontal">
-
-  <include layout="@layout/material_timepicker_textinput_display" />
-
-  <include
-    android:id="@+id/material_clock_period_toggle"
-    layout="@layout/material_clock_period_toggle"
-    android:layout_width="@dimen/material_clock_period_toggle_width"
-    android:layout_height="@dimen/material_clock_period_toggle_height"
-    android:layout_marginStart="@dimen/material_clock_period_toggle_horizontal_gap" />
-
-</LinearLayout>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="@dimen/mtrl_min_touch_target_size"
+  android:layout_height="@dimen/mtrl_min_touch_target_size"
+  android:gravity="center"
+  android:textColor="?attr/colorOnSurface"
+  android:textSize="@dimen/kmaterial_clock_number_text_size"
+  android:visibility="gone"
+  tools:ignore="SpUsage" />

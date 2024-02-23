@@ -35,10 +35,4 @@
     android:id="@+id/material_minute_tv"
     layout="@layout/material_time_chip" />
 
-  <include layout="@layout/material_clock_display_divider" />
-
-  <include
-    android:id="@+id/material_second_tv"
-    layout="@layout/material_time_chip" />
-
 </LinearLayout>
