@@ -91,7 +91,7 @@ subprojects {
 
 subprojects {
   version = rootProject.ext.mdcLibraryVersion
-  group = 'com.google.android.material'
+  group = 'com.github.kizitonwose'
 
   // Disable strict dependency resolution version constraints for test projects
   if (project.name.contains("tests")) {
