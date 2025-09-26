@@ -16,8 +16,6 @@
 
 package com.google.android.material.timepicker;
 
-import com.google.android.material.R;
-
 import static androidx.annotation.RestrictTo.Scope.LIBRARY_GROUP;
 import static com.google.android.material.timepicker.TimeFormat.CLOCK_24H;
 
@@ -29,7 +27,6 @@ import android.content.DialogInterface.OnDismissListener;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.os.Bundle;
-import androidx.fragment.app.DialogFragment;
 import android.text.TextUtils;
 import android.util.Pair;
 import android.util.TypedValue;
@@ -42,6 +39,7 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IntDef;
 import androidx.annotation.IntRange;
@@ -52,11 +50,15 @@ import androidx.annotation.StringRes;
 import androidx.annotation.StyleRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.accessibility.AccessibilityEventCompat;
+import androidx.fragment.app.DialogFragment;
+
+import com.google.android.material.R;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.resources.MaterialAttributes;
 import com.google.android.material.shape.MaterialShapeDrawable;
 import com.google.android.material.timepicker.TimePickerView.OnDoubleTapListener;
 import com.google.errorprone.annotations.CanIgnoreReturnValue;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.LinkedHashSet;
@@ -145,6 +147,20 @@ public final class MaterialTimePicker extends DialogFragment implements OnDouble
 
     fragment.setArguments(args);
     return fragment;
+  }
+
+  /** Returns the second in the range [0, 59]. */
+  @IntRange(from = 0, to = 59)
+  public int getSecond() {
+    return time.second;
+  }
+
+  /** Sets the second in the range [0, 59]. */
+  public void setSecond(@IntRange(from = 0, to = 59) int second) {
+    time.setSecond(second);
+    if (activePresenter != null) {
+      activePresenter.invalidate();
+    }
   }
 
   /** Returns the minute in the range [0, 59]. */
@@ -603,6 +619,14 @@ public final class MaterialTimePicker extends DialogFragment implements OnDouble
       return this;
     }
 
+    /** Sets the second with which to start the time picker. */
+    @NonNull
+    @CanIgnoreReturnValue
+    public Builder setSecond(@IntRange(from = 0, to = 59) int second) {
+      time.setSecond(second);
+      return this;
+    }
+
     /**
      * Sets the time format for the time picker.
      *
@@ -614,7 +638,9 @@ public final class MaterialTimePicker extends DialogFragment implements OnDouble
     public Builder setTimeFormat(@TimeFormat int format) {
       int hour = time.hour;
       int minute = time.minute;
+      int second = time.second;
       time = new TimeModel(format);
+      time.setSecond(second);
       time.setMinute(minute);
       time.setHourOfDay(hour);
       return this;

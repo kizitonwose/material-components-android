@@ -21,6 +21,7 @@ import static com.google.common.truth.Truth.assertThat;
 import static java.util.Calendar.HOUR;
 
 import com.google.android.material.internal.ParcelableTestUtils;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
@@ -31,7 +32,7 @@ public class TimeModelParcelableTest {
 
   @Test
   public void timeModel_restoreParcelable() {
-    TimeModel timeModel = new TimeModel(12, 40, HOUR, CLOCK_12H);
+    TimeModel timeModel = new TimeModel(12, 40, 30, HOUR, CLOCK_12H);
     TimeModel restoredTimeModel = ParcelableTestUtils.parcelAndCreate(timeModel, TimeModel.CREATOR);
 
     assertThat(restoredTimeModel).isEqualTo(timeModel);

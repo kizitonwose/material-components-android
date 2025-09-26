@@ -16,14 +16,13 @@
 
 package com.google.android.material.timepicker;
 
-import com.google.android.material.R;
-
 import static android.view.View.GONE;
 import static com.google.android.material.timepicker.TimeFormat.CLOCK_12H;
 import static java.util.Calendar.AM;
 import static java.util.Calendar.HOUR;
 import static java.util.Calendar.MINUTE;
 import static java.util.Calendar.PM;
+import static java.util.Calendar.SECOND;
 
 import android.content.res.Resources;
 import android.text.Editable;
@@ -36,6 +35,8 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
+
+import com.google.android.material.R;
 import com.google.android.material.button.MaterialButtonToggleGroup;
 import com.google.android.material.internal.TextWatcherAdapter;
 import com.google.android.material.internal.ViewUtils;
@@ -46,6 +47,22 @@ class TimePickerTextInputPresenter implements OnSelectionChange, TimePickerPrese
 
   private final LinearLayout timePickerView;
   private final TimeModel time;
+  private final TextWatcher secondTextWatcher =
+      new TextWatcherAdapter() {
+        @Override
+        public void afterTextChanged(Editable s) {
+          try {
+            if (TextUtils.isEmpty(s)) {
+              time.setSecond(0);
+              return;
+            }
+            int second = Integer.parseInt(s.toString());
+            time.setSecond(second);
+          } catch (NumberFormatException ok) {
+            // ignore invalid input
+          }
+        }
+      };
   private final TextWatcher minuteTextWatcher =
       new TextWatcherAdapter() {
         @Override
@@ -79,21 +96,28 @@ class TimePickerTextInputPresenter implements OnSelectionChange, TimePickerPrese
           }
         }
       };
+  private final ChipTextInputComboView secondTextInput;
   private final ChipTextInputComboView minuteTextInput;
   private final ChipTextInputComboView hourTextInput;
   private final TimePickerTextInputKeyController controller;
   private final EditText hourEditText;
   private final EditText minuteEditText;
+  private final EditText secondEditText;
   private MaterialButtonToggleGroup toggle;
 
   public TimePickerTextInputPresenter(final LinearLayout timePickerView, final TimeModel time) {
     this.timePickerView = timePickerView;
     this.time = time;
     Resources res = timePickerView.getResources();
+    secondTextInput = timePickerView.findViewById(R.id.material_second_text_input);
     minuteTextInput = timePickerView.findViewById(R.id.material_minute_text_input);
     hourTextInput = timePickerView.findViewById(R.id.material_hour_text_input);
+    TextView secondLabel = secondTextInput.findViewById(R.id.material_label);
     TextView minuteLabel = minuteTextInput.findViewById(R.id.material_label);
     TextView hourLabel = hourTextInput.findViewById(R.id.material_label);
+
+    secondLabel.setText(res.getString(R.string.material_timepicker_second));
+    secondLabel.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
 
     minuteLabel.setText(res.getString(R.string.material_timepicker_minute));
     minuteLabel.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
@@ -101,6 +125,7 @@ class TimePickerTextInputPresenter implements OnSelectionChange, TimePickerPrese
     hourLabel.setText(res.getString(R.string.material_timepicker_hour));
     hourLabel.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
 
+    secondTextInput.setTag(R.id.selection_type, SECOND);
     minuteTextInput.setTag(R.id.selection_type, MINUTE);
     hourTextInput.setTag(R.id.selection_type, HOUR);
 
@@ -118,8 +143,10 @@ class TimePickerTextInputPresenter implements OnSelectionChange, TimePickerPrese
 
     hourTextInput.setOnClickListener(onClickListener);
     minuteTextInput.setOnClickListener(onClickListener);
+    secondTextInput.setOnClickListener(onClickListener);
     hourTextInput.addInputFilter(time.getHourInputValidator());
     minuteTextInput.addInputFilter(time.getMinuteInputValidator());
+    secondTextInput.addInputFilter(time.getMinuteInputValidator());
 
     hourEditText = hourTextInput.getTextInput().getEditText();
     hourEditText.setAccessibilityDelegate(
@@ -129,8 +156,12 @@ class TimePickerTextInputPresenter implements OnSelectionChange, TimePickerPrese
     minuteEditText.setAccessibilityDelegate(
         setTimeUnitAccessiblityLabel(
             timePickerView.getResources(), R.string.material_timepicker_minute));
+    secondEditText = secondTextInput.getTextInput().getEditText();
+    secondEditText.setAccessibilityDelegate(
+        setTimeUnitAccessiblityLabel(
+            timePickerView.getResources(), R.string.material_timepicker_second));
 
-    controller = new TimePickerTextInputKeyController(hourTextInput, minuteTextInput, time);
+    controller = new TimePickerTextInputKeyController(hourTextInput, minuteTextInput, secondTextInput, time);
     hourTextInput.setChipDelegate(
         new ClickActionDelegate(timePickerView.getContext(), R.string.material_hour_selection) {
           @Override
@@ -159,7 +190,17 @@ class TimePickerTextInputPresenter implements OnSelectionChange, TimePickerPrese
                         .getString(R.string.material_minute_suffix, String.valueOf(time.minute)));
           }
         });
-
+    secondTextInput.setChipDelegate(
+        new ClickActionDelegate(timePickerView.getContext(), R.string.material_second_selection) {
+          @Override
+          public void onInitializeAccessibilityNodeInfo(
+              View host, AccessibilityNodeInfoCompat info) {
+            super.onInitializeAccessibilityNodeInfo(host, info);
+            info.setContentDescription(
+                host.getResources()
+                    .getString(R.string.material_second_suffix, String.valueOf(time.second)));
+          }
+        });
     initialize();
   }
 
@@ -184,18 +225,22 @@ class TimePickerTextInputPresenter implements OnSelectionChange, TimePickerPrese
   private void addTextWatchers() {
     hourEditText.addTextChangedListener(hourTextWatcher);
     minuteEditText.addTextChangedListener(minuteTextWatcher);
+    secondEditText.addTextChangedListener(secondTextWatcher);
   }
 
   private void removeTextWatchers() {
     hourEditText.removeTextChangedListener(hourTextWatcher);
     minuteEditText.removeTextChangedListener(minuteTextWatcher);
+    secondEditText.removeTextChangedListener(secondTextWatcher);
   }
 
   private void setTime(TimeModel time) {
     removeTextWatchers();
     Locale current = timePickerView.getResources().getConfiguration().locale;
+    String secondFormatted = String.format(current, "%02d", time.second);
     String minuteFormatted = String.format(current, "%02d", time.minute);
     String hourFormatted = String.format(current, "%02d", time.getHourForDisplay());
+    secondTextInput.setText(secondFormatted);
     minuteTextInput.setText(minuteFormatted);
     hourTextInput.setText(hourFormatted);
     addTextWatchers();
@@ -232,6 +277,7 @@ class TimePickerTextInputPresenter implements OnSelectionChange, TimePickerPrese
   @Override
   public void onSelectionChanged(int selection) {
     time.selection = selection;
+    secondTextInput.setChecked(selection == SECOND);
     minuteTextInput.setChecked(selection == MINUTE);
     hourTextInput.setChecked(selection == HOUR);
     updateSelection();
@@ -259,11 +305,13 @@ class TimePickerTextInputPresenter implements OnSelectionChange, TimePickerPrese
   }
 
   public void resetChecked() {
+    secondTextInput.setChecked(time.selection == SECOND);
     minuteTextInput.setChecked(time.selection == MINUTE);
     hourTextInput.setChecked(time.selection == HOUR);
   }
 
   public void clearCheck() {
+    secondTextInput.setChecked(false);
     minuteTextInput.setChecked(false);
     hourTextInput.setChecked(false);
   }

@@ -16,19 +16,21 @@
 
 package com.google.android.material.timepicker;
 
-import com.google.android.material.test.R;
-
 import static android.os.Looper.getMainLooper;
 import static com.google.common.truth.Truth.assertThat;
+import static org.robolectric.Shadows.shadowOf;
 import static java.util.Calendar.HOUR;
 import static java.util.Calendar.MINUTE;
-import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Activity;
 import android.view.KeyEvent;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
+
 import androidx.test.core.app.ApplicationProvider;
+
+import com.google.android.material.test.R;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,6 +43,7 @@ public class TimePickerTextInputKeyControllerTest {
 
   private ChipTextInputComboView hourInput;
   private ChipTextInputComboView minuteInput;
+  private ChipTextInputComboView secondInput;
   private TimeModel timeModel;
 
   @Before
@@ -50,11 +53,12 @@ public class TimePickerTextInputKeyControllerTest {
     activity.setTheme(R.style.ThemeOverlay_MaterialComponents_TimePicker);
     activity.setTheme(R.style.ThemeOverlay_MaterialComponents_TimePicker_Display_TextInputEditText);
     timeModel = new TimeModel();
+    secondInput = new ChipTextInputComboView(activity);
     minuteInput = new ChipTextInputComboView(activity);
     hourInput = new ChipTextInputComboView(activity);
 
     TimePickerTextInputKeyController controller =
-        new TimePickerTextInputKeyController(hourInput, minuteInput, timeModel);
+        new TimePickerTextInputKeyController(hourInput, minuteInput, secondInput, timeModel);
     controller.bind();
   }
 
